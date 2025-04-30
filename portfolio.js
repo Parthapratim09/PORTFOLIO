@@ -49,36 +49,100 @@ navLinks.forEach(link => {
     });
 });
 
-
-
-
-
-
-
-
-// Initialize EmailJS with your User ID
-emailjs.init('DYgE0Qf1sCF2HopNF'); // Replace with your EmailJS User ID
+emailjs.init('DYgE0Qf1sCF2HopNF'); // Keep your actual User ID
 
 document.getElementById('contactForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the form from submitting normally
+    event.preventDefault();
+    
+    // Validate form inputs
+    if (!validateForm()) {
+        return;
+    }
+
+    // Show loading state
+    const submitBtn = document.querySelector('#contactForm input[type="submit"]');
+    const originalBtnText = submitBtn.value;
+    submitBtn.value = 'Sending...';
+    submitBtn.disabled = true;
 
     // Get form data
     const formData = {
         name: document.getElementById('name').value,
-        phoneNo: document.getElementById('phno').value,
+        phone: document.getElementById('phno').value,
         email: document.getElementById('e-mail').value,
-        message: document.getElementById('message').value
+        message: document.getElementById('message').value,
+        date: new Date().toLocaleString()
     };
 
     // Send email using EmailJS
-    emailjs.send('service_o9k44tu', 'template_wm0m2x3', formData) // Replace with your Service ID and Template ID
+    emailjs.send('service_o9k44tu', 'template_wm0m2x3', formData)
         .then(function(response) {
             console.log('Email sent successfully!', response);
-            // document.getElementById('responseMessage').textContent = 'Message sent successfully!';
-            document.getElementById('contactForm').reset(); // Clear the form
+            showAlert('Message sent successfully!', 'success');
+            document.getElementById('contactForm').reset();
         }, function(error) {
             console.error('Failed to send email:', error);
-            alert("Error in sending")
-            // document.getElementById('responseMessage').textContent = 'Failed to send message. Please try again.';
+            showAlert('Failed to send message. Please try again later.', 'error');
+        })
+        .finally(() => {
+            submitBtn.value = originalBtnText;
+            submitBtn.disabled = false;
         });
 });
+
+function validateForm() {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('e-mail').value.trim();
+    const message = document.getElementById('message').value.trim();
+    const phone = document.getElementById('phno').value.trim();
+    
+    if (!name) {
+        showAlert('Please enter your name', 'error');
+        return false;
+    }
+    
+    if (!email) {
+        showAlert('Please enter your email', 'error');
+        return false;
+    } else if (!validateEmail(email)) {
+        showAlert('Please enter a valid email address', 'error');
+        return false;
+    }
+    
+    if (!message) {
+        showAlert('Please enter your message', 'error');
+        return false;
+    }
+    if (!phone) {
+        showAlert('Please enter your PhoneNo', 'error');
+        return false;
+    }
+    return true;
+}
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function showAlert(message, type) {
+    // Remove any existing alerts
+    const existingAlert = document.querySelector('.form-alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // Create alert element
+    const alert = document.createElement('div');
+    alert.className = `form-alert ${type}`;
+    alert.textContent = message;
+    
+    // Insert before form
+    const form = document.getElementById('contactForm');
+    form.parentNode.insertBefore(alert, form);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
