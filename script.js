@@ -27,7 +27,7 @@ window.onscroll=()=>{
 }
 cv.addEventListener('click',()=>{
     // console.log("button was clicked");
-    window.open('https://drive.google.com/file/d/13wqjPbTpU5KPcJ4pvP6iJ5CiTvQBveO9/view?usp=sharing', '_blank');
+    window.open('https://drive.google.com/file/d/1dmNK_qXr2Im4D4KgUbvBEy3FcMWt9mQA/view?usp=sharing', '_blank');
 })
 
 
